@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GAJJALAVARIPALLI Quiz</title>
+<style>
+*{box-sizing:border-box} body{margin:0;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px;background:linear-gradient(135deg,#120000,#3b0808,#090909);color:#fff;font-family:Arial,sans-serif}
+.card{width:min(620px,100%);background:#171010;border:2px solid #d9a441;border-radius:24px;padding:22px;text-align:center;box-shadow:0 18px 50px #0009}
+h1{color:#ffd36a;font-size:26px} .sub{opacity:.9} .hidden{display:none}
+input{width:100%;padding:14px;border-radius:12px;border:1px solid #9d7b3f;background:#241713;color:#fff;font-size:17px;margin:14px 0}
+button{width:100%;padding:14px;margin:8px 0;border:1px solid #9d7b3f;border-radius:12px;background:#241713;color:#fff;font-size:17px;cursor:pointer}
+button:hover{background:#47251a} .primary{background:#e53935;border:0;font-weight:bold} .correct{background:#176b36!important} .wrong{background:#8b2020!important}
+.progress{height:8px;background:#3b2b20;border-radius:10px;margin:15px 0 22px;overflow:hidden} .bar{height:100%;background:#e53935;width:0;transition:.3s}
+.question{font-size:21px;line-height:1.45;margin:20px 0} .msg{min-height:26px;font-weight:bold}
+iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:14px;margin-top:15px}
+.lang{position:fixed;right:15px;top:15px;width:auto;padding:8px 12px;background:#fff;color:#111;border:0;border-radius:20px;font-weight:bold}
+.note{font-size:12px;opacity:.65;margin-top:12px}
+</style>
+</head>
+<body>
+<button class="lang" id="langBtn" onclick="toggleLang()">తెలుగు</button>
+<div class="card">
+<section id="start">
+<h1>🔒 VIDEO PUZZLE</h1>
+<p id="intro">Answer all 3 questions correctly to unlock the video.</p>
+<button class="primary" onclick="begin()" id="startBtn">START GAME</button>
+</section>
+
+<section id="quiz" class="hidden">
+<div id="count"></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="question" id="question"></div>
+<div id="options"></div>
+<div class="msg" id="msg"></div>
+</section>
+
+<section id="video" class="hidden">
+<h1>🎉 <span id="unlock">VIDEO UNLOCKED!</span></h1>
+<p id="welcome"></p>
+<iframe id="player" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
+<p class="note">Solve all 3 questions correctly to watch the video.</p>
+</section>
+</div>
+<script>
+const questions=[
+{en:"What is the village name registered in Government records?",te:"ప్రభుత్వ రికార్డుల్లో మన గ్రామం పేరుగా నమోదు చేయబడినది ఏది?",options:[
+["Gajjalavaripalli","గజ్జలవారిపల్లి",true],
+["Yerakula Vaddi Palli","యేరకుల వడ్డిపల్లి",false],
+["Urlagaddapodhu","ఉర్లగడ్డపొదు",false],
+["Vaddipalli","వడ్డిపల్లి",false]]},
+{en:"In the Vinayaka Swamy festival, which one did we NOT see?",te:"వినాయక స్వామి పండుగలో మనం ఏదిని చూడలేదు?",options:[
+["Moon","చంద్రుడు",true],["Sun","సూర్యుడు",false],["Water","నీరు",false],["Earth","భూమి",false]]},
+{en:"Our villagers are all...?",te:"మన గ్రామస్థులందరూ...?",options:[
+["Family","కుటుంబం",true],["Friends","స్నేహితులు",false],["Cousins","కజిన్స్ / బంధువులు",false],["Well known persons","బాగా తెలిసిన వ్యక్తులు",false]]}
+];
+let lang="en",current=0,
+function toggleLang(){
+ lang=lang==="en"?"te":"en";
+ document.getElementById("langBtn").textContent=lang==="en"?"తెలుగు":"English";
+ if(!document.getElementById("quiz").classList.contains("hidden")) render();
+ else {
+ document.getElementById("intro").textContent=lang==="en"?"Answer all 3 questions correctly to unlock the video.":"వీడియోను అన్‌లాక్ చేయడానికి 3 ప్రశ్నలకు సరైన సమాధానాలు ఇవ్వండి.";
+ document.getElementById("startBtn").textContent=lang==="en"?"START GAME":"గేమ్ ప్రారంభించండి";
+ }
+}
+function begin(){
+ userName=document.getElementById("name").value.trim();
+ if(!userName){alert(lang==="en"?"Please enter your name.":"దయచేసి మీ పేరు నమోదు చేయండి.");return;}
+ current=0; document.getElementById("start").classList.add("hidden"); document.getElementById("quiz").classList.remove("hidden"); render();
+}
+function render(){
+ let q=questions[current]; document.getElementById("count").textContent=lang==="en"?`Question ${current+1} of 3`:`ప్రశ్న ${current+1} / 3`;
+ document.getElementById("bar").style.width=(current/3*100)+"%"; document.getElementById("question").textContent=q[lang];
+ let box=document.getElementById("options"); box.innerHTML=""; document.getElementById("msg").textContent="";
+ q.options.forEach((o,i)=>{let b=document.createElement("button");b.textContent=o[lang];b.onclick=()=>answer(i,b);box.appendChild(b);});
+}
+function answer(i,b){
+ let q=questions[current];
+ if(q.options[i][2]){b.classList.add("correct");document.getElementById("msg").textContent=lang==="en"?"✓ Correct!":"✓ సరైన సమాధానం!";
+ setTimeout(()=>{current++;if(current===3) unlockVideo();else render();},500);
+ }else{b.classList.add("wrong");document.getElementById("msg").textContent=lang==="en"?"✗ Wrong answer — try again.":"✗ తప్పు సమాధానం — మళ్లీ ప్రయత్నించండి.";}
+}
+function unlockVideo(){
+ document.getElementById("quiz").classList.add("hidden");document.getElementById("video").classList.remove("hidden");
+ document.getElementById("bar").style.width="100%";
+ document.getElementById("welcome").textContent=lang==="en"?"Congratulations! You unlocked the video.":"అభినందనలు! మీరు వీడియోను అన్‌లాక్ చేశారు.";
+ document.getElementById("player").src="https://www.youtube.com/embed/SCTSjUWsQGs?autoplay=1&rel=0";
+ // Paste your Google Apps Script Web App URL below after deployment.
+ const ENDPOINT="";
+ if(ENDPOINT){
+   fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:userName})}).catch(()=>{});
+ }
+}
+</script>
+</body>
+</html>
