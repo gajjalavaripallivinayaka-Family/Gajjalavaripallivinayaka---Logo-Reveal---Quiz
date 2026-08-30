@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gajjalavaripalli Quiz</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(135deg,#180000,#520808,#050505);
+    font-family:Arial,sans-serif;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:650px;
+    background:#1d1111;
+    border:2px solid #d5a642;
+    border-radius:22px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 10px 40px rgba(0,0,0,.7);
+}
+
+h1{
+    color:#ffd65c;
+}
+
+.question{
+    font-size:21px;
+    line-height:1.5;
+    margin:25px 0;
+}
+
+.answer{
+    display:block;
+    width:100%;
+    min-height:55px;
+    margin:10px 0;
+    padding:14px;
+    border:2px solid #bd9143;
+    border-radius:12px;
+    background:#392020;
+    color:white;
+    font-size:17px;
+    text-align:left;
+    cursor:pointer;
+}
+
+.answer:hover{
+    background:#57302d;
+}
+
+.correct{
+    background:#14753b !important;
+}
+
+.wrong{
+    background:#9b2020 !important;
+}
+
+.start{
+    width:100%;
+    padding:16px;
+    border:0;
+    border-radius:12px;
+    background:#e53935;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.status{
+    min-height:30px;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.progress{
+    width:100%;
+    height:8px;
+    background:#493020;
+    border-radius:10px;
+    margin:15px 0;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:#e53935;
+    border-radius:10px;
+}
+
+.hidden{
+    display:none;
+}
+
+.language{
+    position:fixed;
+    top:15px;
+    right:15px;
+    padding:9px 15px;
+    border:0;
+    border-radius:20px;
+    background:white;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.video{
+    width:100%;
+    aspect-ratio:16/9;
+    border:0;
+    border-radius:15px;
+    margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<button class="language" onclick="changeLanguage()" id="languageButton">
+తెలుగు
+</button>
+
+<div class="container">
+
+<!-- START -->
+
+<div id="startPage">
+
+<h1>🔒 VIDEO PUZZLE</h1>
+
+<p id="intro">
+Answer all 3 questions correctly to reveal the video.
+</p>
+
+<button class="start" onclick="startQuiz()" id="startButton">
+START QUIZ
+</button>
+
+</div>
+
+
+<!-- QUIZ -->
+
+<div id="quizPage" class="hidden">
+
+<div id="questionNumber">
+Question 1 of 3
+</div>
+
+<div class="progress">
+<div class="progress-bar" id="progress"></div>
+</div>
+
+<div class="question" id="questionText"></div>
+
+<div id="answerButtons">
+
+<button class="answer" onclick="answer(0)">
+A
+</button>
+
+<button class="answer" onclick="answer(1)">
+B
+</button>
+
+<button class="answer" onclick="answer(2)">
+C
+</button>
+
+<button class="answer" onclick="answer(3)">
+D
+</button>
+
+</div>
+
+<div class="status" id="status"></div>
+
+</div>
+
+
+<!-- VIDEO -->
+
+<div id="videoPage" class="hidden">
+
+<h1>🎉 VIDEO UNLOCKED!</h1>
+
+<p>
+Congratulations! All 3 answers are correct.
+</p>
+
+<iframe
+class="video"
+src="https://www.youtube.com/embed/SCTSjUWsQGs?autoplay=1&rel=0"
+allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+allowfullscreen>
+</iframe>
+
+</div>
+
+</div>
+
+
+<script>
+
+let currentQuestion = 0;
+
+let language = "english";
+
+
+const questions = [
+
+{
+
+english:
+"What is the village name registered in Government records?",
+
+telugu:
+"ప్రభుత్వ రికార్డుల్లో మన గ్రామం పేరుగా నమోదు చేయబడినది ఏది?",
+
+answersEnglish:[
+"Gajjalavaripalli",
+"Yerakula Vaddi Palli",
+"Urlagaddapodhu",
+"Vaddipalli"
+],
+
+answersTelugu:[
+"గజ్జలవారిపల్లి",
+"యేరకుల వడ్డిపల్లి",
+"ఉర్లగడ్డపొదు",
+"వడ్డిపల్లి"
+],
+
+correct:0
+
+},
+
+{
+
+english:
+"In the Vinayaka Swamy festival, which one did we NOT see?",
+
+telugu:
+"వినాయక స్వామి పండుగలో మనం ఏదిని చూడలేదు?",
+
+answersEnglish:[
+"Moon",
+"Sun",
+"Water",
+"Earth"
+],
+
+answersTelugu:[
+"చంద్రుడు",
+"సూర్యుడు",
+"నీరు",
+"భూమి"
+],
+
+correct:0
+
+},
+
+{
+
+english:
+"Our villagers are all...?",
+
+telugu:
+"మన గ్రామస్థులందరూ...?",
+
+answersEnglish:[
+"Family",
+"Friends",
+"Cousins",
+"Well known persons"
+],
+
+answersTelugu:[
+"కుటుంబం",
+"స్నేహితులు",
+"కజిన్స్ / బంధువులు",
+"బాగా తెలిసిన వ్యక్తులు"
+],
+
+correct:0
+
+}
+
+];
+
+
+function startQuiz(){
+
+currentQuestion = 0;
+
+document.getElementById("startPage")
+.classList.add("hidden");
+
+document.getElementById("quizPage")
+.classList.remove("hidden");
+
+showQuestion();
+
+}
+
+
+function showQuestion(){
+
+let q = questions[currentQuestion];
+
+let number = currentQuestion + 1;
+
+document.getElementById("questionNumber").innerText =
+language === "english"
+?
+"Question " + number + " of 3"
+:
+"ప్రశ్న " + number + " / 3";
+
+
+document.getElementById("progress").style.width =
+(number / 3 * 100) + "%";
+
+
+document.getElementById("questionText").innerText =
+language === "english"
+?
+q.english
+:
+q.telugu;
+
+
+let buttons =
+document.querySelectorAll(".answer");
+
+
+for(let i=0;i<4;i++){
+
+buttons[i].innerText =
+String.fromCharCode(65+i) + ". " +
+
+(
+language === "english"
+?
+q.answersEnglish[i]
+:
+q.answersTelugu[i]
+);
+
+buttons[i].classList.remove("correct");
+buttons[i].classList.remove("wrong");
+
+buttons[i].disabled = false;
+
+}
+
+
+document.getElementById("status").innerText = "";
+
+}
+
+
+function answer(selected){
+
+let q = questions[currentQuestion];
+
+let buttons =
+document.querySelectorAll(".answer");
+
+if(selected === q.correct){
+
+buttons[selected].classList.add("correct");
+
+document.getElementById("status").innerText =
+language === "english"
+?
+"✓ Correct answer!"
+:
+"✓ సరైన సమాధానం!";
+
+
+for(let i=0;i<4;i++){
+buttons[i].disabled = true;
+}
+
+
+setTimeout(function(){
+
+currentQuestion++;
+
+if(currentQuestion < 3){
+
+showQuestion();
+
+}else{
+
+showVideo();
+
+}
+
+},700);
+
+
+}else{
+
+buttons[selected].classList.add("wrong");
+
+document.getElementById("status").innerText =
+language === "english"
+?
+"✗ Wrong answer. Try again."
+:
+"✗ తప్పు సమాధానం. మళ్లీ ప్రయత్నించండి.";
+
+
+setTimeout(function(){
+
+buttons[selected].classList.remove("wrong");
+
+},700);
+
+}
+
+}
+
+
+function showVideo(){
+
+document.getElementById("quizPage")
+.classList.add("hidden");
+
+document.getElementById("videoPage")
+.classList.remove("hidden");
+
+}
+
+
+function changeLanguage(){
+
+if(language === "english"){
+
+language = "telugu";
+
+document.getElementById("languageButton")
+.innerText = "English";
+
+document.getElementById("intro")
+.innerText =
+"వీడియోను చూడటానికి 3 ప్రశ్నలకు సరైన సమాధానాలు ఇవ్వండి.";
+
+document.getElementById("startButton")
+.innerText =
+"క్విజ్ ప్రారంభించండి";
+
+}else{
+
+language = "english";
+
+document.getElementById("languageButton")
+.innerText = "తెలుగు";
+
+document.getElementById("intro")
+.innerText =
+"Answer all 3 questions correctly to reveal the video.";
+
+document.getElementById("startButton")
+.innerText =
+"START QUIZ";
+
+}
+
+
+if(!document.getElementById("quizPage").classList.contains("hidden")){
+
+showQuestion();
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
