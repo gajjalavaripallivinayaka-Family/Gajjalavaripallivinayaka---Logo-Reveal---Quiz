@@ -1,1 +1,0 @@
-# Gajjalavaripallivinayaka---Logo-Reveal---Quiz
